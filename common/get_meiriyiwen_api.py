@@ -17,6 +17,8 @@ logging.basicConfig(
         filename='cataline.log',
         filemode='w')
 
+
+
 def get_api(article_id):
     try:
         article_url = "https://interface.meiriyiwen.com/article/day?dev=1&date="+article_id
@@ -31,7 +33,7 @@ def get_api(article_id):
         Sql.insert_dd_name(title, author, article,article_url, article_id,source,catagroery)
 
     except  Exception as e:
-        logging.error(article_url+'request failure')
+        logging.error(article_url+' request failure')
         logging.error(e)
 
 def begin_req():
