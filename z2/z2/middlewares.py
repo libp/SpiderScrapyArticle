@@ -138,7 +138,7 @@ class Z2DownloaderMiddleware(object):
 
 
 
-class MeiZiTu(object):
+class RefererMiddleware(object):
 
     def process_request(self, request, spider):
         '''设置headers和切换请求头

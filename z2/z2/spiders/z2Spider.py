@@ -14,44 +14,71 @@ from scrapy.linkextractors import LinkExtractor
 from z2.items import Z2Item
 from scrapy.http import Request
 
+logging.basicConfig(
+    level=logging.INFO,
+    format=
+    '%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+    datefmt='%a, %d %b %Y %H:%M:%S',
+    filename='cataline.log',
+    filemode='w')
 
 class Spider(CrawlSpider):
     name = 'z2'
-    host = 'http://www.umei.cc/p/gaoqing/xiuren_VIP/123401.htm'
-    # start_urls = list(set(z2_TYPES))
+    host = 'http://www.umei.cc/'
     img_urls = []
-    logging.getLogger("requests").setLevel(logging.WARNING)  # 将requests的日志级别设成WARNING
-    logging.basicConfig(
-        level=logging.INFO,
-        format=
-        '%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-        datefmt='%a, %d %b %Y %H:%M:%S',
-        filename='cataline.log',
-        filemode='w')
+    allowed_domains = ["www.umei.cc"]
+    start_urls = ['http://www.umei.cc/p/gaoqing/rihan/']
+    # rules = (
+    #     Rule(LinkExtractor(allow=('http://www.umei.cc/p/gaoqing/rihan/\d{1,6}.htm',), deny=('http://www.umei.cc/p/gaoqing/rihan/\d{1,6}_\d{1,6}.htm')),
+    #          callback='parse_z2_key', follow=True),
+    # )
 
     def start_requests(self):
-        '''
-        如果请求的是一个随机地址，需要设置dont_filter=True，不过滤重复的请求
-        :return:
-        '''
-        yield Request(url='http://www.umei.cc/p/gaoqing/xiuren_VIP/123401.htm',
-                      callback=self.parse_z2_info)
+        yield Request(url='http://www.umei.cc/p/gaoqing/rihan/',
+                      callback=self.parse_z2_key)
+
+    def parse_z2_key(self, response):
+        soup = BeautifulSoup(response.body, "lxml")
+        content = soup.find("div", attrs={'class': 'TypeList'})
+        # logging.debug(content)
+        for link in content.findAll("a", attrs={'href': re.compile( r'(.*)(/rihan/)(\d{1,6})(.htm)'), 'class': 'TypeBigPics'}):
+            logging.debug(link['href'])
+            yield Request(url=link['href'],
+                          callback=self.parse_z2_info)
+
+            break
+
 
 
     def parse_z2_info(self, response):
+        # item = Z2Item()
         soup = BeautifulSoup(response.body, "lxml")
-        img_urls = soup.findAll("img")
-        item = Z2Item()
-        for link in soup.findAll("img"):
-            logging.info(link)
-            url = link.attrs['src']
-            self.img_urls.append(url)
 
-        item['image_urls'] = self.img_urls
-        yield item
-    #
-    #     # logging.info(soup)
-    #     # yield z2Item
+        # 去除html注释
+        for element in soup(text=lambda text: isinstance(text, Comment)):
+            element.extract()
+
+        # 过滤script标签
+        [s.extract() for s in soup('script')]
+
+        # 过滤b标签
+        [s.extract() for s in soup('b')]
+
+        ArticleDesc = soup.find("p", attrs={'class': 'ArticleDesc'})
+        logging.debug(ArticleDesc.get_text())
+
+
+        Pages =  soup.find("div", attrs={'class': 'NewPages'}).find('li')
+        # 第一种含中文的字符串中提取数字的方法
+        # logging.debug(re.findall(r"\d+\.?\d*", Pages.get_text())[0])
+
+        #第二种
+        # logging.debug(Pages.get_text()[1:-3])
+
+        #第三种
+        # logging.debug(filter(str.isdigit, Pages.get_text().encode('gbk')))
+        pageCounts = filter(str.isdigit, Pages.get_text().encode('gbk'))
+
 
 
 

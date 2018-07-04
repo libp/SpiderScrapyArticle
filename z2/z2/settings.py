@@ -90,7 +90,11 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 
-ITEM_PIPELINES = {'scrapy.contrib.pipeline.images.ImagesPipeline': 1}
+# ITEM_PIPELINES = {'scrapy.contrib.pipeline.images.ImagesPipeline': 1}
+ITEM_PIPELINES = {'z2.pipelines.Z2Pipeline': 1}
+
+IMAGES_EXPIRES = 90
+
 IMAGES_STORE = 'C:\\Test01\\'
 
 
@@ -101,5 +105,5 @@ IMAGES_STORE = 'C:\\Test01\\'
 DOWNLOADER_MIDDLEWARES = {
    'z2.middlewares.UserAgentMiddleware': 401,
    'z2.middlewares.CookiesMiddleware': 402,
-   'z2.middlewares.MeiZiTu': 543,
+   'z2.middlewares.RefererMiddleware': 543,
 }
