@@ -45,13 +45,9 @@ class Spider(CrawlSpider):
             logging.debug(link['href'])
             yield Request(url=link['href'],
                           callback=self.parse_z2_info)
-
-            break
-
-
+            # break
 
     def parse_z2_info(self, response):
-        # item = Z2Item()
         soup = BeautifulSoup(response.body, "lxml")
 
         # 去除html注释
@@ -64,24 +60,48 @@ class Spider(CrawlSpider):
         # 过滤b标签
         [s.extract() for s in soup('b')]
 
+
         ArticleDesc = soup.find("p", attrs={'class': 'ArticleDesc'})
         logging.debug(ArticleDesc.get_text())
 
-
-        Pages =  soup.find("div", attrs={'class': 'NewPages'}).find('li')
+        Pages = soup.find("div", attrs={'class': 'NewPages'}).find('li')
+        pageCounts = filter(str.isdigit, Pages.get_text().encode('gbk'))
         # 第一种含中文的字符串中提取数字的方法
         # logging.debug(re.findall(r"\d+\.?\d*", Pages.get_text())[0])
 
-        #第二种
+        # 第二种
         # logging.debug(Pages.get_text()[1:-3])
 
-        #第三种
-        # logging.debug(filter(str.isdigit, Pages.get_text().encode('gbk')))
-        pageCounts = filter(str.isdigit, Pages.get_text().encode('gbk'))
+        # 第三种
+        logging.debug(filter(str.isdigit, Pages.get_text().encode('gbk')))
+
+        img = soup.find("div", attrs={'class': 'ImageBody'}).find('img')
+        url = img.attrs['src']
+        self.img_urls.append(url)
+        logging.debug(self.img_urls)
+
+
+        sourceUrl = response.url[0:-4]
+        # logging.debug(sourceUrl)
+        for i in xrange(1, int(pageCounts) + 1):
+            nextUrl = sourceUrl + '_' + str(i) + '.htm'
+            # logging.debug(nextUrl)
+            yield Request(url=nextUrl,callback=self.parse_z2_single_img, priority = 10000)
 
 
 
-
+    def parse_z2_single_img(self, response):
+        item = Z2Item()
+        img_urls= []
+        soup = BeautifulSoup(response.body, "lxml")
+        item['name'] = re.match(".*/(\d+)", response.url).group(1)
+        logging.debug(item['name'])
+        img = soup.find("div", attrs={'class': 'ImageBody'}).find('img')
+        url = img.attrs['src']
+        img_urls.append(url)
+        item['image_urls'] = img_urls
+        yield item
+        # logging.debug(self.img_urls)
 
 
 

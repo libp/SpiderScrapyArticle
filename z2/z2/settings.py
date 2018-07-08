@@ -52,9 +52,9 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
+# DOWNLOADER_MIDDLEWARES = {
 #    'z2.middlewares.Z2DownloaderMiddleware': 543,
-#}
+# }
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -64,9 +64,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
+# ITEM_PIPELINES = {
 #    'z2.pipelines.Z2Pipeline': 300,
-#}
+# }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -91,7 +91,9 @@ ROBOTSTXT_OBEY = True
 
 
 # ITEM_PIPELINES = {'scrapy.contrib.pipeline.images.ImagesPipeline': 1}
-ITEM_PIPELINES = {'z2.pipelines.Z2Pipeline': 1}
+ITEM_PIPELINES = {
+   'z2.pipelines.Z2Pipeline': 1000,
+}
 
 IMAGES_EXPIRES = 90
 
@@ -106,4 +108,5 @@ DOWNLOADER_MIDDLEWARES = {
    'z2.middlewares.UserAgentMiddleware': 401,
    'z2.middlewares.CookiesMiddleware': 402,
    'z2.middlewares.RefererMiddleware': 543,
+   'z2.middlewares.Z2DownloaderMiddleware': 543,
 }

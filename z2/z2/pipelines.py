@@ -6,6 +6,8 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import hashlib
 import logging
+
+from datetime import datetime
 from scrapy.http import Request
 import time
 from scrapy.exceptions import DropItem
@@ -26,13 +28,16 @@ class Z2Pipeline(ImagesPipeline):
         url = request.url
         image_guid = hashlib.sha1(to_bytes(url)).hexdigest()
         item = request.meta['item']
-        folder = time.time()
+        logging.warn(item['name'])
+        # folder = datetime.now().strftime('%Y%m%d%H%M%S%f')[0:-3]
+        folder = item['name']
         return '%s/%s.jpg' % (folder,image_guid)
         # return 'fulls/%s.jpg' % (image_guid)
 
     def get_media_requests(self, item, info):
+        logging.debug('img_urls:%s' % item['image_urls'])
         for image_url in item['image_urls']:
-            logging.info(image_url)
+            logging.info('image_url：%s'%image_url)
             yield Request(image_url,meta={'item': item,'referer': ''})
 
     def item_completed(self, results, item, info):
@@ -40,5 +45,5 @@ class Z2Pipeline(ImagesPipeline):
         image_paths = [x['path'] for ok, x in results if ok]
         if not image_paths:
             raise DropItem("Item contains no images")
-        item['image_paths'] = image_paths
+        # item['image_paths'] = image_paths
         return item

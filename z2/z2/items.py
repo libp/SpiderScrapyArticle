@@ -9,7 +9,8 @@ from scrapy import Field,Item
 
 class Z2Item(Item):
     image_urls = Field()
-    images = Field()
+    name = Field()
+    url = Field()
     pass
 
 
