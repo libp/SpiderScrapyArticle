@@ -26,18 +26,19 @@ class Z2Pipeline(ImagesPipeline):
 
     def file_path(self, request, response=None, info=None):
         url = request.url
-        image_guid = hashlib.sha1(to_bytes(url)).hexdigest()
+        # image_guid = hashlib.sha1(to_bytes(url)).hexdigest()
+        imageName = url.split('/')[-1]
         item = request.meta['item']
-        logging.warn(item['name'])
-        # folder = datetime.now().strftime('%Y%m%d%H%M%S%f')[0:-3]
         folder = item['name']
-        return '%s/%s.jpg' % (folder,image_guid)
+        # folder = '999'
+        # return '%s/%s.jpg' % (folder,image_guid)
+        return '%s/%s' % (folder,imageName)
         # return 'fulls/%s.jpg' % (image_guid)
 
     def get_media_requests(self, item, info):
         logging.debug('img_urls:%s' % item['image_urls'])
         for image_url in item['image_urls']:
-            logging.info('image_url：%s'%image_url)
+            # logging.info('image_url：%s'%image_url)
             yield Request(image_url,meta={'item': item,'referer': ''})
 
     def item_completed(self, results, item, info):

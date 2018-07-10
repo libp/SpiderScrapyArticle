@@ -110,3 +110,6 @@ DOWNLOADER_MIDDLEWARES = {
    'z2.middlewares.RefererMiddleware': 543,
    'z2.middlewares.Z2DownloaderMiddleware': 543,
 }
+
+
+IMAGES_URLS_FIELD = 'img_urls'

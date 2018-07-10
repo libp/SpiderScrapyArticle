@@ -24,13 +24,11 @@ logging.basicConfig(
 
 class Spider(CrawlSpider):
     name = 'z2'
-    host = 'http://www.umei.cc/'
-    img_urls = []
     allowed_domains = ["www.umei.cc"]
-    start_urls = ['http://www.umei.cc/p/gaoqing/rihan/']
+    # start_urls = ['http://www.umei.cc/p/gaoqing/rihan/']
     # rules = (
     #     Rule(LinkExtractor(allow=('http://www.umei.cc/p/gaoqing/rihan/\d{1,6}.htm',), deny=('http://www.umei.cc/p/gaoqing/rihan/\d{1,6}_\d{1,6}.htm')),
-    #          callback='parse_z2_key', follow=True),
+    #          callback='parse_z2_info', follow=True),
     # )
 
     def start_requests(self):
@@ -49,7 +47,7 @@ class Spider(CrawlSpider):
 
     def parse_z2_info(self, response):
         soup = BeautifulSoup(response.body, "lxml")
-
+        item = Z2Item()
         # 去除html注释
         for element in soup(text=lambda text: isinstance(text, Comment)):
             element.extract()
@@ -75,33 +73,39 @@ class Spider(CrawlSpider):
         # 第三种
         logging.debug(filter(str.isdigit, Pages.get_text().encode('gbk')))
 
+        img_urls = []
+
         img = soup.find("div", attrs={'class': 'ImageBody'}).find('img')
         url = img.attrs['src']
-        self.img_urls.append(url)
-        logging.debug(self.img_urls)
+        img_urls.append(url)
+
+        item['name'] = re.match(".*/(\d+)", response.url).group(1)
+        logging.debug(item['name'])
 
 
         sourceUrl = response.url[0:-4]
         # logging.debug(sourceUrl)
-        for i in xrange(1, int(pageCounts) + 1):
+        for i in xrange(2, int(pageCounts) + 1):
             nextUrl = sourceUrl + '_' + str(i) + '.htm'
             # logging.debug(nextUrl)
-            yield Request(url=nextUrl,callback=self.parse_z2_single_img, priority = 10000)
+            yield  Request(url=nextUrl,callback=self.parse_z2_single_img)
 
+        item['image_urls'] = img_urls
+        yield item
 
 
     def parse_z2_single_img(self, response):
         item = Z2Item()
-        img_urls= []
-        soup = BeautifulSoup(response.body, "lxml")
         item['name'] = re.match(".*/(\d+)", response.url).group(1)
         logging.debug(item['name'])
+        soup = BeautifulSoup(response.body, "lxml")
         img = soup.find("div", attrs={'class': 'ImageBody'}).find('img')
         url = img.attrs['src']
+        img_urls=[]
         img_urls.append(url)
+
         item['image_urls'] = img_urls
         yield item
-        # logging.debug(self.img_urls)
 
 
 

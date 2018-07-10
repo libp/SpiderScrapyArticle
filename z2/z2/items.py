@@ -11,6 +11,7 @@ class Z2Item(Item):
     image_urls = Field()
     name = Field()
     url = Field()
+    images = Field()
     pass
 
 
