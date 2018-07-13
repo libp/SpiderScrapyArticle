@@ -12,6 +12,11 @@ class Z2Item(Item):
     name = Field()
     url = Field()
     images = Field()
+    desc = Field()
+    pageCounts = Field()
+    tags = Field()
+    id = Field()
+    title = Field()
     pass
 
 

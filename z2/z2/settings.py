@@ -22,15 +22,15 @@ NEWSPIDER_MODULE = 'z2.spiders'
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 128
+CONCURRENT_REQUESTS = 64
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 #DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 128
-CONCURRENT_REQUESTS_PER_IP = 128
+CONCURRENT_REQUESTS_PER_DOMAIN = 64
+CONCURRENT_REQUESTS_PER_IP = 64
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -39,10 +39,10 @@ CONCURRENT_REQUESTS_PER_IP = 128
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
+# DEFAULT_REQUEST_HEADERS = {
 #   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 #   'Accept-Language': 'en',
-#}
+# }
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
@@ -70,11 +70,11 @@ CONCURRENT_REQUESTS_PER_IP = 128
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
+# AUTOTHROTTLE_ENABLED = True
 # The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
+# AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
+# AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
 #AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
@@ -96,7 +96,7 @@ ITEM_PIPELINES = {
 }
 
 IMAGES_EXPIRES = 90
-IMAGES_STORE = 'C:\\Test02\\'
+IMAGES_STORE = 'C:\\Test01\\'
 
 
 
@@ -109,3 +109,10 @@ DOWNLOADER_MIDDLEWARES = {
    'z2.middlewares.RefererMiddleware': 543,
    'z2.middlewares.Z2DownloaderMiddleware': 543,
 }
+
+MYSQL_HOSTS = '127.0.0.1'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = 'root'
+MYSQL_PORT = 3306
+MYSQL_DB = 'nichuiniu'
+MYSQL_CHARSET='UTF8'
