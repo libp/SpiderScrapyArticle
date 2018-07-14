@@ -31,12 +31,41 @@ class Sql:
 
     @classmethod
     def select_count(cls, ImgNum):
-        sql = 'SELECT COUNT(*) from tbl_nichuiniu_img where Num =%(ImgNum)s;'
+        sql = 'SELECT * from tbl_nichuiniu_img where Num =%(ImgNum)s;'
+        value = {
+            'ImgNum': ImgNum
+        }
+        return cur.execute(sql, value)
+
+    @classmethod
+    def select_imgs(cls, ImgNum):
+        sql = 'SELECT * from tbl_nichuiniu_img where Num =%(ImgNum)s;'
         value = {
             'ImgNum': ImgNum
         }
         cur.execute(sql, value)
         return cur.fetchone()
+
+    @classmethod
+    def update_count(cls, ImgNum):
+        sql = 'update tbl_nichuiniu_img set Deleted=1  where Num =%(ImgNum)s;'
+        value = {
+            'ImgNum': ImgNum
+        }
+        result =  cur.execute(sql, value)
+        cnx.commit()
+        return result
+
+    @classmethod
+    def update_img_count(cls, ImgNum,ImgCount):
+        sql = 'update tbl_nichuiniu_img set ImgCount=%(ImgCount)s  where Num =%(ImgNum)s;'
+        value = {
+            'ImgNum': ImgNum,
+            'ImgCount': ImgCount
+        }
+        result = cur.execute(sql, value)
+        cnx.commit()
+        return result
 
     @classmethod
     def id_name(cls, xs_name):
