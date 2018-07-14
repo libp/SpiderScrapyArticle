@@ -38,8 +38,8 @@ class Spider(CrawlSpider):
     # )
 
     def start_requests(self):
-        for i in range(141):
-            yield Request(url='http://www.umei.cc/p/gaoqing/rihan/%s.htm'%(str(i)),
+        for i in range(1,22):
+            yield Request(url='http://www.umei.cc/p/gaoqing/cn/%s.htm'%(str(i)),
                           callback=self.parse_z2_key)
 
     def parse_z2_key(self, response):
