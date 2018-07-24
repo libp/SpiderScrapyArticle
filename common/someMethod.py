@@ -137,8 +137,8 @@ def rename_img(path):
 
 
 if __name__ == "__main__":
-    # judgeRepeat()
+    judgeRepeat()
 
 
-    path = "C:/Test01/rihan/"
-    updateImgCount(path)
+    # path = "C:/Test01/xiuren_VIP/"
+    # updateImgCount(path)
