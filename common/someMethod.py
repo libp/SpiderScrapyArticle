@@ -34,20 +34,30 @@ def getAra():
 
     href='http://www.umei.cc/p/gaoqing/rihan/125300.htm'
     com_id = re.match(".*/(\d+)", href)
-
+    # 125300
     print com_id.group(1)
 
     src='http://i1.umei.cc/uploads/tu/201803/9999/d0a7773d45.jpg'
     name = src.split('/')[-1]
+    # d0a7773d45.jpg
     print name
 
+    # pypy
     print "{0}{0}".format("py")
 
     href_id = 'http://www.umei.cc/p/gaoqing/rihan/20120327030302_17.htm'
     id = href_id.split('/')[-1][0:-4].split('_')[-1]
     id2 = re.match(".*/(\d+)_(\d+)", href_id)
+    # 17
     print id
+    # 17
     print id2.group(2)
+
+    href_id = 'http://www.umei.cc/p/gaoqing/rihan/20160126190151.htm?1'
+    # 20120327030302
+    id = href_id.split('/')[-1][0:-6].split('_')[-1]
+    print id
+
 
     src = 'http://i1.umei.cc/uploads/tu/201803/9999/d0a7773d45.jpg'
     postfix = src.split('/')[-1].split('.')[-1]
@@ -80,13 +90,15 @@ def learnThreadPool():
     print '%d second' % (time.time() - start_time)
 
 
-def judgeRepeat():
+def judgeRepeat(path):
     """
-    会更新数据库deleted字段，如果本地有数据库也有，将其表示为1
+    会更新数据库deleted字段，如果本地有数据库也有，将其表示为5，以筛选出本地无而数据库有记录的图片
     本方法为一次性方法，update_count不可随意执行
     :return:
     """
-    path = "C:/Test01/xxx/"
+    # path = "C:/Test01/xxx/"
+    # path = "C:/Test01/"+type +"/"
+    print path
     parents = os.listdir(path)
     for parent in parents:
         count = Sql.update_count(parent)
@@ -106,14 +118,22 @@ def updateImgCount(path):
         child = os.path.join(path, parent)
         parents = os.listdir(child)
         count = len(parents)
-        result = Sql.select_imgs(parent)[2]
-        if(count==result):
-            # print 'that is right'
+
+        result = Sql.select_imgs(parent)
+        if(Sql.select_imgs(parent)==None):
+            print parent
+            continue
+        # print parent
+        # print result[2]
+        if(count==result[2]):
             logging.debug('that is right')
+            child = os.path.join(path, parent)
+            logging.info('%s'%child)
+            rename_img(child)
         else:
             Sql.update_img_count(parent,count)
             # print parent,count
-            logging.info('that is right')
+            logging.info('change img count success')
             child = os.path.join(path, parent)
             rename_img(child)
 
@@ -131,14 +151,19 @@ def rename_img(path):
     for n in spilt_num_postfix: num.append(int(n[0]))
     num.sort()
     new = 1
+    print path
     for i in num:
         os.rename(path + '/' + str(i) + '.jpg', path + '/' + str(new) + '.jpg')
         new += 1
 
 
 if __name__ == "__main__":
-    judgeRepeat()
+    path = "C:/Test01/zhiwutupian/"
+
+    # judgeRepeat(path)
+
+    updateImgCount(path)
 
 
-    # path = "C:/Test01/xiuren_VIP/"
-    # updateImgCount(path)
+    # 正则匹配的方法
+    # getAra()

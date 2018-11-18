@@ -97,5 +97,5 @@ def dirs(path):
 
 
 if __name__ == "__main__":
-  path = "C:/Test01/rihan/"
+  path = "C:/Test01/zhiwutupian/"
   dirs(path)

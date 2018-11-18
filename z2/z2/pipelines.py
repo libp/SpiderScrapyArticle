@@ -50,7 +50,9 @@ class Z2Pipeline(ImagesPipeline):
     def insert_img(self,item):
         category = item['url'].split('/')[-2]
         folder = item['name']
-        if (item['id'] == '1'):
+
+        if (item['id'] == 1):
+            logging.info("****************operate database****************")
             Sql.insert_img(folder, item['pageCounts'], item['title'], category, item['desc'], ','.join(item['tags']))
             for tag in item['tags']:
                 Sql.insert_tag(tag, folder)

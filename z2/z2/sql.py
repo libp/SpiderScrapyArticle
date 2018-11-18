@@ -48,7 +48,7 @@ class Sql:
 
     @classmethod
     def update_count(cls, ImgNum):
-        sql = 'update tbl_nichuiniu_img set Deleted=1  where Num =%(ImgNum)s;'
+        sql = 'update tbl_nichuiniu_img set Deleted=5  where Num =%(ImgNum)s;'
         value = {
             'ImgNum': ImgNum
         }

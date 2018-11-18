@@ -38,8 +38,8 @@ class Spider(CrawlSpider):
     # )
 
     def start_requests(self):
-        for i in range(1,45):
-            yield Request(url='http://www.umei.cc/p/gaoqing/xiuren_VIP/%s.htm'%(str(i)),
+        for i in range(1,42):
+            yield Request(url='http://www.umei.cc/tupiandaquan/zhiwutupian/%s.htm'%(str(i)),
                           callback=self.parse_z2_key)
 
     def parse_z2_key(self, response):
@@ -56,23 +56,49 @@ class Spider(CrawlSpider):
             # break
 
 
-        # for link in content.findAll("a", attrs={'href': re.compile(r'(.*)(\d+)(.htm)'),
-        #                                         'class': 'TypeBigPics'}):
-        #     logging.debug(link['href'])
-        #     yield Request(url=link['href'],
-        #                   callback=self.parse_z2_info)
-        #     break
-
     def parse_z2_info(self, response):
         soup = BeautifulSoup(response.body, "lxml")
+        [s.extract() for s in soup('b')]
+        # print soup
         Pages = soup.find("div", attrs={'class': 'NewPages'}).find('li')
+        # logging.info("Pages:%s "%(Pages))
         pageCounts = filter(str.isdigit, Pages.get_text().encode('gbk'))
-
+        # logging.info("pageCounts:%s " %(pageCounts))
         sourceUrl = response.url[0:-4]
-        for i in xrange(1, int(pageCounts) + 1):
+        for i in xrange(2, int(pageCounts) + 1):
+            # if(i==1):
+            #     # 增加？以用于再次请求同一个页面
+            #     nextUrl = sourceUrl + '.htm?1'
+            # else:
             nextUrl = sourceUrl + '_' + str(i) + '.htm'
+            logging.info("nextUrl:%s " %(nextUrl))
             yield  Request(url=nextUrl,callback=self.parse_z2_single_img,meta={'tags':response.meta['tags']})
             # break
+
+        item = Z2Item()
+        item['name'] = re.match(".*/(\d+)", response.url).group(1)
+        item['url'] = response.url
+        item['id'] = 1
+        ArticleDesc = soup.find("p", attrs={'class': 'ArticleDesc'})
+        item['desc'] = ArticleDesc.get_text()
+        # logging.info("ArticleDesc:%s " % (item['desc']))
+        try:
+            Pages = soup.find("div", attrs={'class': 'NewPages'}).find('li')
+            # logging.info("Pages:%s " % (Pages))
+            pageCounts = filter(str.isdigit, Pages.get_text().encode('gbk'))
+            # logging.info("pageCounts:%s " % (pageCounts))
+            item['pageCounts'] = pageCounts
+        except:
+            logging.info("not find newpages")
+            item['pageCounts'] = 1
+
+        item['tags'] = response.meta['tags']
+        item['title'] = soup.find("div", attrs={'class': 'ArticleTitle'}).get_text()
+        img_urls = []
+        img = soup.find("div", attrs={'class': 'ImageBody'}).find('img')
+        img_urls.append(img.attrs['src'])
+        item['image_urls'] = img_urls
+        yield item
 
 
     def parse_z2_single_img(self, response):
@@ -82,20 +108,8 @@ class Spider(CrawlSpider):
         item = Z2Item()
         item['name'] = re.match(".*/(\d+)", response.url).group(1)
         item['url'] =  response.url
-
         id = response.url.split('/')[-1][0:-4].split('_')[-1]
         item['id'] = id
-        if(int(id)==1):
-            ArticleDesc = soup.find("p", attrs={'class': 'ArticleDesc'})
-            item['desc'] = ArticleDesc.get_text()
-
-            Pages = soup.find("div", attrs={'class': 'NewPages'}).find('li')
-            pageCounts = filter(str.isdigit, Pages.get_text().encode('gbk'))
-            item['pageCounts'] = pageCounts
-            item['tags'] = response.meta['tags']
-
-            item['title'] = soup.find("div",attrs={'class': 'ArticleTitle'}).get_text()
-
         img_urls = []
         img = soup.find("div", attrs={'class': 'ImageBody'}).find('img')
         img_urls.append(img.attrs['src'])
